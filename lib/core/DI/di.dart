@@ -13,34 +13,12 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  //! Features - Home
-
-  // Use Cases
-  sl.registerLazySingleton(() => GetDailySummaryUseCase(sl()));
-  sl.registerLazySingleton(() => TriggerWorkflowUseCase(sl()));
-
-  // Repository
-  sl.registerLazySingleton<DailySummaryRepository>(
-    () => DailySummaryRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
-  );
-
-  // Data sources
-  sl.registerLazySingleton<DailySummaryRemoteDataSource>(
-    () => DailySummaryRemoteDataSourceImpl(
-      dio: sl(),
-      webhookUrl: sl<AppConfig>().n8nWebhookUrl,
-    ),
-  );
-
-  //! Core
-  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
-  sl.registerLazySingleton(() => AppConfig());
-
   //! External
-  sl.registerLazySingleton(() => InternetConnectionChecker.createInstance());
+  sl.registerLazySingleton<InternetConnectionChecker>(
+    () => InternetConnectionChecker.createInstance(),
+  );
 
-  // Dio
-  sl.registerLazySingleton(() {
+  sl.registerLazySingleton<Dio>(() {
     final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 30),
@@ -51,16 +29,32 @@ Future<void> init() async {
 
     if (sl<AppConfig>().isDebugMode) {
       dio.interceptors.add(
-        LogInterceptor(
-          requestBody: true,
-          responseBody: true,
-          error: true,
-          requestHeader: true,
-          responseHeader: false,
-        ),
+        LogInterceptor(requestBody: true, responseBody: true, error: true),
       );
     }
 
     return dio;
   });
+
+  //! Core
+  sl.registerLazySingleton<AppConfig>(() => AppConfig());
+
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+
+  //! Data sources
+  sl.registerLazySingleton<DailySummaryRemoteDataSource>(
+    () => DailySummaryRemoteDataSourceImpl(
+      dio: sl(),
+      webhookUrl: sl<AppConfig>().n8nWebhookUrl,
+    ),
+  );
+
+  //! Repository
+  sl.registerLazySingleton<DailySummaryRepository>(
+    () => DailySummaryRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
+
+  //! Use cases
+  sl.registerLazySingleton(() => GetDailySummaryUseCase(sl()));
+  sl.registerLazySingleton(() => TriggerWorkflowUseCase(sl()));
 }

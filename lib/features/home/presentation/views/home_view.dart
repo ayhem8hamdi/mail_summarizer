@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inbox_iq/DI/di.dart';
+import 'package:inbox_iq/core/DI/di.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/get_daily_summary_usecase.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/trigger_workflow_usecase.dart';

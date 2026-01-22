@@ -1,7 +1,6 @@
 // lib/core/errors/failures.dart
 import 'package:equatable/equatable.dart';
 import 'package:inbox_iq/core/failure/exceptions.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 abstract class Failure extends Equatable {
   final String message;
@@ -105,17 +104,4 @@ class NotFoundFailure extends Failure {
 
 class UnexpectedFailure extends Failure {
   const UnexpectedFailure({required super.message, super.details});
-}
-
-abstract class NetworkInfo {
-  Future<bool> get isConnected;
-}
-
-class NetworkInfoImpl implements NetworkInfo {
-  final InternetConnectionChecker connectionChecker;
-
-  NetworkInfoImpl(this.connectionChecker);
-
-  @override
-  Future<bool> get isConnected => connectionChecker.hasConnection;
 }

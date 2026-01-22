@@ -14,6 +14,16 @@ class InboxMoodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final mood = summary.mood;
 
+    // Calculate percentages for the bar
+    final total = summary.totalEmails > 0 ? summary.totalEmails : 1;
+    final urgentPercent = summary.statistics.urgent / total;
+    final notImportantPercent =
+        (summary.totalEmails -
+            summary.statistics.urgent -
+            summary.statistics.actionRequired) /
+        total;
+    final fyiPercent = summary.statistics.actionRequired / total;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.kSurfaceColor,
@@ -21,85 +31,102 @@ class InboxMoodCard extends StatelessWidget {
         boxShadow: AppConstants.cardShadow,
       ),
       padding: EdgeInsets.all(_getCardPadding(context)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          // Header with emoji from API
-          Row(
-            children: [
-              // Emoji from API
-              Text(
-                mood.status.emoji,
-                style: TextStyle(fontSize: _getEmojiSize(context)),
-              ),
-
-              SizedBox(width: AppConstants.spacing16),
-
-              // Text from API
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Inbox Mood: ${mood.status.label}',
-                      style: AppStyles.bold18(context).copyWith(
-                        color: getMoodColor(mood.status),
-                        fontSize: 15,
-                      ),
-                    ),
-                    SizedBox(height: AppConstants.spacing4),
-                    Text(
-                      mood.description,
-                      style: AppStyles.regular12(context).copyWith(
-                        fontSize: 13,
-                        color: const Color(0XFFA2ACBA),
-                        fontWeight: FontWeight.w300,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          // Left side: Emoji
+          Text(
+            mood.status.emoji,
+            style: TextStyle(fontSize: _getEmojiSize(context)),
           ),
 
-          SizedBox(height: AppConstants.spacing16),
+          SizedBox(width: AppConstants.spacing16),
 
-          // Mood Score Bar
-          _buildMoodScoreBar(mood.score),
+          // Right side: Text and Bar
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  'Inbox Mood: ${mood.status.label}',
+                  style: AppStyles.bold18(context).copyWith(
+                    color: _getMoodTextColor(mood.status),
+                    fontSize: 16,
+                  ),
+                ),
+
+                SizedBox(height: AppConstants.spacing4),
+
+                // Description
+                Text(
+                  mood.description,
+                  style: AppStyles.regular12(
+                    context,
+                  ).copyWith(fontSize: 12, color: const Color(0xFF64748B)),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                SizedBox(height: AppConstants.spacing12),
+
+                // Segmented Bar
+                _buildSegmentedBar(
+                  urgentPercent: urgentPercent,
+                  notImportantPercent: notImportantPercent,
+                  fyiPercent: fyiPercent,
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildMoodScoreBar(double score) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Mood Score: ${(score * 100).toInt()}%',
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: Color(0xFF64748B),
-          ),
+  /// Builds the segmented progress bar with 3 colors
+  Widget _buildSegmentedBar({
+    required double urgentPercent,
+    required double notImportantPercent,
+    required double fyiPercent,
+  }) {
+    return Container(
+      height: 8,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppConstants.radiusButton),
+        color: Colors.grey.shade200,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppConstants.radiusButton),
+        child: Row(
+          children: [
+            // Urgent segment (Red)
+            if (urgentPercent > 0)
+              Expanded(
+                flex: (urgentPercent * 100).toInt(),
+                child: Container(color: AppColors.kUrgentRed),
+              ),
+
+            // Not Important segment (Yellow)
+            if (notImportantPercent > 0)
+              Expanded(
+                flex: (notImportantPercent * 100).toInt(),
+                child: Container(color: AppColors.kNeutralYellow),
+              ),
+
+            // FYI/Action Required segment (Green)
+            if (fyiPercent > 0)
+              Expanded(
+                flex: (fyiPercent * 100).toInt(),
+                child: Container(color: AppColors.kPositiveGreen),
+              ),
+          ],
         ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(AppConstants.radiusButton),
-          child: LinearProgressIndicator(
-            value: score,
-            minHeight: 8,
-            backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation<Color>(_getScoreColor(score)),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
-  Color getMoodColor(MoodStatus status) {
+  /// Returns text color for mood status
+  Color _getMoodTextColor(MoodStatus status) {
     switch (status) {
       case MoodStatus.positive:
         return AppColors.kPositiveGreen;
@@ -110,10 +137,11 @@ class InboxMoodCard extends StatelessWidget {
     }
   }
 
-  Color _getScoreColor(double score) {
-    if (score >= 0.7) return AppColors.kPositiveGreen;
-    if (score >= 0.4) return AppColors.kNeutralYellow;
-    return AppColors.kUrgentRed;
+  double _getEmojiSize(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    if (width < 360) return 40.0;
+    if (width < 600) return 48.0;
+    return 56.0;
   }
 
   double _getCardPadding(BuildContext context) {
@@ -121,12 +149,5 @@ class InboxMoodCard extends StatelessWidget {
     if (width < 360) return 16.0;
     if (width < 600) return 20.0;
     return 24.0;
-  }
-
-  double _getEmojiSize(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (width < 360) return 40.0;
-    if (width < 600) return 48.0;
-    return 56.0;
   }
 }
