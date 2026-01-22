@@ -2,21 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/core/utils/app_styles.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
-import 'package:inbox_iq/features/home/presentation/widgets/stat_item.dart';
+import 'package:inbox_iq/features/home/domain/entities/dailysummary_entity.dart';
+import 'package:inbox_iq/features/home/presentation/views/widgets/stat_item.dart';
 
 class InboxStatsCard extends StatelessWidget {
-  final int emailCount;
-  final int urgentCount;
-  final int actionCount;
-  final int readCount;
+  final DailySummary summary;
 
-  const InboxStatsCard({
-    super.key,
-    required this.emailCount,
-    required this.urgentCount,
-    required this.actionCount,
-    required this.readCount,
-  });
+  const InboxStatsCard({super.key, required this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +22,9 @@ class InboxStatsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Date
+          // Date from API
           Text(
-            _getFormattedDate(),
+            summary.date,
             style: AppStyles.regular12(
               context,
             ).copyWith(color: Colors.white.withOpacity(0.9)),
@@ -40,12 +32,12 @@ class InboxStatsCard extends StatelessWidget {
 
           SizedBox(height: AppConstants.spacing16),
 
-          // Email Count
+          // Email Count from API
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                emailCount.toString(),
+                summary.totalEmails.toString(),
                 style: AppStyles.semiBold20(
                   context,
                 ).copyWith(fontSize: 36, color: Colors.white),
@@ -65,24 +57,24 @@ class InboxStatsCard extends StatelessWidget {
 
           SizedBox(height: AppConstants.spacing16),
 
-          // Stats Row
+          // Stats Row from API
           Row(
             children: [
               StatItem(
                 icon: Icons.warning_amber_rounded,
-                count: urgentCount,
+                count: summary.statistics.urgent,
                 label: 'Urgent',
               ),
               SizedBox(width: AppConstants.spacing24),
               StatItem(
                 icon: Icons.task_alt_rounded,
-                count: actionCount,
+                count: summary.statistics.actionRequired,
                 label: 'Actions',
               ),
               SizedBox(width: AppConstants.spacing24),
               StatItem(
                 icon: Icons.mark_email_read_rounded,
-                count: readCount,
+                count: summary.statistics.read,
                 label: 'Read',
               ),
             ],
@@ -90,26 +82,6 @@ class InboxStatsCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _getFormattedDate() {
-    final now = DateTime.now();
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    return '${weekdays[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
   }
 
   double _getCardPadding(BuildContext context) {
