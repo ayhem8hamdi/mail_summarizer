@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/core/utils/app_styles.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
+import 'package:inbox_iq/features/home/domain/entities/dailysummary_entity.dart';
 
 class DailySummaryCard extends StatelessWidget {
-  const DailySummaryCard({super.key});
+  final DailySummary summary;
+
+  const DailySummaryCard({super.key, required this.summary});
 
   @override
   Widget build(BuildContext context) {
-    // Mock data - replace with actual data from API later
-    const summaryText =
-        'You have 2 urgent client requests, 2 meeting invitations, and 5 newsletters. Priority: Follow up with Sarah about project deadline.';
-
     return Container(
       decoration: BoxDecoration(
         color: AppColors.kSurfaceColor,
@@ -50,13 +49,55 @@ class DailySummaryCard extends StatelessWidget {
 
           SizedBox(height: AppConstants.spacing12),
 
-          // Summary Text
+          // Summary Text from API
           Text(
-            summaryText,
+            summary.summary,
             style: AppStyles.regular12(
               context,
             ).copyWith(height: 1.6, fontSize: 14, fontWeight: FontWeight.w200),
           ),
+
+          // Quick Actions
+          if (summary.quickActions.isNotEmpty) ...[
+            SizedBox(height: AppConstants.spacing16),
+            const Divider(),
+            SizedBox(height: AppConstants.spacing8),
+            Text(
+              'Quick Actions',
+              style: AppStyles.bold18(context).copyWith(fontSize: 14),
+            ),
+            SizedBox(height: AppConstants.spacing8),
+            ...summary.quickActions.map(
+              (action) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      action.completed
+                          ? Icons.check_circle
+                          : Icons.radio_button_unchecked,
+                      size: 16,
+                      color: action.completed
+                          ? AppColors.kPositiveGreen
+                          : AppColors.kNeutralYellow,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        action.task,
+                        style: AppStyles.regular12(context).copyWith(
+                          fontSize: 13,
+                          decoration: action.completed
+                              ? TextDecoration.lineThrough
+                              : null,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );
