@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:inbox_iq/core/router/app_router.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
 import 'package:inbox_iq/features/on_boarding/data/on_boarding_page_model.dart';
@@ -62,6 +64,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         duration: AppConstants.animationDuration,
         curve: AppConstants.animationCurve,
       );
+    } else {
+      completeOnboarding();
     }
   }
 
@@ -75,13 +79,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  void _completeOnboarding() {
-    // TODO: Navigate to home screen or login
-    // Example:
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (_) => const HomeScreen()),
-    // );
-    debugPrint('Onboarding completed');
+  void completeOnboarding() {
+    context.goNamed(AppRouter.homeScreen);
   }
 
   @override

@@ -218,16 +218,16 @@ abstract class AppStyles {
   // Navigation label (12px regular)
   static TextStyle navLabel(BuildContext context) =>
       _baseInter(context).copyWith(
-        fontSize: responsiveFontSize(context, fontSize: 12),
-        fontWeight: FontWeight.w400,
+        fontSize: responsiveFontSize(context, fontSize: 10),
+        fontWeight: FontWeight.w300,
         color: AppColors.kTextSecondary,
       );
 
   // Navigation label active (12px semibold)
   static TextStyle navLabelActive(BuildContext context) =>
       _baseInter(context).copyWith(
-        fontSize: responsiveFontSize(context, fontSize: 12),
-        fontWeight: FontWeight.w600,
+        fontSize: responsiveFontSize(context, fontSize: 10),
+        fontWeight: FontWeight.w300,
         color: AppColors.kPrimaryBlue,
       );
 }
