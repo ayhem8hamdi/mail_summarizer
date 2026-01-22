@@ -1,17 +1,20 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
-import 'package:inbox_iq/features/splash/presentation/views/splash_view.dart';
+import 'package:inbox_iq/core/router/app_router.dart';
+
 
 void main() {
-  runApp(const InboxIq());
+  runApp(DevicePreview(enabled: false, builder: (context) => const InboxIq()));
 }
 
 class InboxIq extends StatelessWidget {
   const InboxIq({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
-      home: const SplashView(),
     );
   }
 }
+

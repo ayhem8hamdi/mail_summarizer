@@ -96,7 +96,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               isLastPage: _currentPage == _pages.length - 1,
             ),
 
-            // PageView with onboarding pages
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -108,7 +107,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            // Page Indicator
             PageIndicatorWidget(
               pageCount: _pages.length,
               currentPage: _currentPage,
@@ -116,7 +114,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
             SizedBox(height: AppConstants.spacing24),
 
-            // Next/Get Started Button
             NextButtonWidget(
               onPressed: _nextPage,
               isLastPage: _currentPage == _pages.length - 1,

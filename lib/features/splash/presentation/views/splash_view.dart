@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:inbox_iq/core/router/app_router.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
-import 'package:inbox_iq/features/on_boarding/presentation/views/onboarding_view.dart';
 import 'package:inbox_iq/features/splash/presentation/widgets/splash_screen_body.dart';
 
 class SplashView extends StatefulWidget {
@@ -18,9 +19,7 @@ class _SplashViewState extends State<SplashView> {
     super.initState();
     Future.delayed(const Duration(seconds: splashDurationSeconds), () {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-        );
+        context.goNamed(AppRouter.onBoardingScreen);
       }
     });
   }

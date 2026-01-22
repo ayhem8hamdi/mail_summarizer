@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class OnboardingPageModel {
   final String emoji;
   final String title;

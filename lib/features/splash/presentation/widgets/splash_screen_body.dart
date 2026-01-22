@@ -20,7 +20,7 @@ class SplashViewBody extends StatelessWidget {
         const SizedBox(height: 5),
         Text(
           'InboxlQ',
-          style: AppStyles.bold24(context).copyWith(color: Colors.white),
+          style: AppStyles.bold20(context).copyWith(color: Colors.white),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 9),
