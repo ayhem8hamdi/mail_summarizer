@@ -79,8 +79,8 @@ class SentimentStats {
 
   /// Mock data for development
   static const SentimentStats mockData = SentimentStats(
-    positiveCount: 5,
-    neutralCount: 2,
-    urgentCount: 1,
+    positiveCount: 1,
+    neutralCount: 0,
+    urgentCount: 4,
   );
 }
