@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/inbox_details_body.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/inbox_details_body.dart';
 
 class InboxDetailsView extends StatelessWidget {
   final String emailId;

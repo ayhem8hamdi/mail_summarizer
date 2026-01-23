@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
-import 'package:inbox_iq/features/inbox/data/email_entity.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 
 class PriorityBadge extends StatelessWidget {
   final EmailPriority priority;

@@ -8,12 +8,23 @@ import 'package:inbox_iq/features/home/data/repo/daily_summary_repo_impl.dart';
 import 'package:inbox_iq/features/home/domain/repo/home_repo.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/get_daily_summary_usecase.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/trigger_workflow_usecase.dart';
+import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source.dart';
+import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source_impl.dart';
+
+import 'package:inbox_iq/features/inbox/data/repo/inbox_repo_impl.dart';
+import 'package:inbox_iq/features/inbox/domain/repos/inbox_repostry.dart';
+import 'package:inbox_iq/features/inbox/domain/usecases/filtered_emails_usecase.dart';
+import 'package:inbox_iq/features/inbox/domain/usecases/get_email_by_id_usecase.dart';
+import 'package:inbox_iq/features/inbox/domain/usecases/get_emails_use_case.dart';
+
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  //! External
+  //! =========================
+  //! External Dependencies
+  //! =========================
   sl.registerLazySingleton<InternetConnectionChecker>(
     () => InternetConnectionChecker.createInstance(),
   );
@@ -36,12 +47,16 @@ Future<void> init() async {
     return dio;
   });
 
+  //! =========================
   //! Core
+  //! =========================
   sl.registerLazySingleton<AppConfig>(() => AppConfig());
-
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
 
-  //! Data sources
+  //! =========================
+  //! Feature: Home
+  //! =========================
+  // Data sources
   sl.registerLazySingleton<DailySummaryRemoteDataSource>(
     () => DailySummaryRemoteDataSourceImpl(
       dio: sl(),
@@ -49,12 +64,33 @@ Future<void> init() async {
     ),
   );
 
-  //! Repository
+  // Repository
   sl.registerLazySingleton<DailySummaryRepository>(
     () => DailySummaryRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
   );
 
-  //! Use cases
+  // Use Cases
   sl.registerLazySingleton(() => GetDailySummaryUseCase(sl()));
   sl.registerLazySingleton(() => TriggerWorkflowUseCase(sl()));
+
+  //! =========================
+  //! Feature: Inbox
+  //! =========================
+  // Data sources
+  sl.registerLazySingleton<InboxRemoteDataSource>(
+    () => InboxRemoteDataSourceImpl(
+      dio: sl(),
+      webhookUrl: sl<AppConfig>().n8nWebhookUrlInbox,
+    ),
+  );
+
+  // Repository
+  sl.registerLazySingleton<InboxRepository>(
+    () => InboxRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetEmailsUseCase(sl()));
+  sl.registerLazySingleton(() => GetFilteredEmailsUseCase(sl()));
+  sl.registerLazySingleton(() => GetEmailByIdUseCase(sl()));
 }

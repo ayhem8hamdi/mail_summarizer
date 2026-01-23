@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
-import 'package:inbox_iq/features/inbox/data/email_entity.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/priority_badge.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/priority_badge.dart';
 
 class EmailCard extends StatelessWidget {
   final EmailEntity email;
@@ -17,7 +17,7 @@ class EmailCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: email.isRead ? Colors.white : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: email.isRead
@@ -47,7 +47,7 @@ class EmailCard extends StatelessWidget {
                 // Sender name
                 Expanded(
                   child: Text(
-                    email.sender,
+                    email.senderName,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: email.isRead
@@ -63,7 +63,7 @@ class EmailCard extends StatelessWidget {
 
                 // Time
                 Text(
-                  email.time,
+                  email.formattedTime,
                   style: TextStyle(
                     fontSize: 12,
                     color: const Color(0xFF94A3B8),
@@ -104,9 +104,9 @@ class EmailCard extends StatelessWidget {
 
             const SizedBox(height: 6),
 
-            // Preview
+            // Snippet
             Text(
-              email.preview,
+              email.snippet,
               style: const TextStyle(
                 fontSize: 13,
                 color: Color(0xFF64748B),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:inbox_iq/features/inbox/data/email_details_entity.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/sender_avatar.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/priority_badge.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/priority_badge.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/sender_avatar.dart';
 
 class EmailDetailHeader extends StatelessWidget {
   final EmailDetailEntity email;
@@ -80,7 +81,7 @@ class EmailDetailHeader extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Priority Badge
-          PriorityBadge(priority: email.priority),
+          PriorityBadge(priority: email.priority as EmailPriority),
         ],
       ),
     );

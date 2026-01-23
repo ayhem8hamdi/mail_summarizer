@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:inbox_iq/features/inbox/data/email_details_entity.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/email_body_content.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/email_action_buttons.dart';
-import 'package:inbox_iq/features/inbox/presentation/widgets/email_details_header.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_body_content.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_action_buttons.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_details_header.dart';
 
 class InboxDetailsBody extends StatelessWidget {
   final String emailId;
