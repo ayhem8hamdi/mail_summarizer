@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:inbox_iq/core/router/app_router.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
 import 'package:inbox_iq/features/inbox/data/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/widgets/email_card.dart';
@@ -117,12 +119,9 @@ class _InboxViewBodyState extends State<InboxViewBody> {
                 return EmailCard(
                   email: email,
                   onTap: () {
-                    // TODO: Navigate to email detail
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Opened: ${email.subject}'),
-                        duration: const Duration(seconds: 1),
-                      ),
+                    context.pushNamed(
+                      AppRouter.inboxDetailsScreen,
+                      pathParameters: {'emailId': email.id},
                     );
                   },
                 );

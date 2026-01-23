@@ -45,7 +45,7 @@ Future<void> init() async {
   sl.registerLazySingleton<DailySummaryRemoteDataSource>(
     () => DailySummaryRemoteDataSourceImpl(
       dio: sl(),
-      webhookUrl: sl<AppConfig>().n8nWebhookUrl,
+      webhookUrl: sl<AppConfig>().n8nWebhookUrlDailySummary,
     ),
   );
 

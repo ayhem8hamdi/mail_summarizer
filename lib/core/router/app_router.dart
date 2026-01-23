@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:inbox_iq/core/utils/bottom_nav_bar.dart';
 import 'package:inbox_iq/features/home/presentation/views/home_view.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/inbox_view.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/inbox_details_view.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/views/onboarding_view.dart';
 import 'package:inbox_iq/features/settings/presentation/views/settings_view.dart';
 import 'package:inbox_iq/features/splash/presentation/views/splash_view.dart';
@@ -12,6 +13,7 @@ abstract class AppRouter {
   static const String onBoardingScreen = 'onBoardingScreen';
   static const String homeScreen = 'homeScreen';
   static const String inboxScreen = 'inboxScreen';
+  static const String inboxDetailsScreen = 'inboxDetailsScreen'; // ← NEW
   static const String settingsScreen = 'settingsScreen';
 
   // Router
@@ -28,6 +30,16 @@ abstract class AppRouter {
         name: onBoardingScreen,
         path: '/onBoarding',
         builder: (context, state) => const OnboardingScreen(),
+      ),
+
+      // ✅ Inbox Details Screen (Outside Bottom Nav)
+      GoRoute(
+        name: inboxDetailsScreen,
+        path: '/inbox/:emailId',
+        builder: (context, state) {
+          final emailId = state.pathParameters['emailId'] ?? '';
+          return InboxDetailsView(emailId: emailId);
+        },
       ),
 
       // Bottom Navigation Shell

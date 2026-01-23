@@ -17,7 +17,7 @@ class EmailCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: email.isRead ? Colors.white : const Color(0xFFF8FAFC),
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: email.isRead
