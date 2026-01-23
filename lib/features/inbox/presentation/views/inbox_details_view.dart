@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/inbox_details_body.dart';
 
 class InboxDetailsView extends StatelessWidget {
-  final String emailId;
+  final EmailEntity email;
 
-  const InboxDetailsView({super.key, required this.emailId});
+  const InboxDetailsView({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,7 @@ class InboxDetailsView extends StatelessWidget {
           ),
         ],
       ),
-      body: InboxDetailsBody(emailId: emailId),
+      body: InboxDetailsBody(email: email),
     );
   }
 }

@@ -20,7 +20,6 @@ class EmailModel extends EmailEntity {
     required super.isArchived,
   });
 
-  // From JSON
   factory EmailModel.fromJson(Map<String, dynamic> json) {
     return EmailModel(
       id: json['id'] ?? '',
@@ -44,7 +43,6 @@ class EmailModel extends EmailEntity {
     );
   }
 
-  // To JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -66,22 +64,19 @@ class EmailModel extends EmailEntity {
     };
   }
 
-  // Parse priority from string
+  /// Parse priority from string (URGENT, FYI, NORMAL)
   static EmailPriority _parsePriority(String? priority) {
     switch (priority?.toUpperCase()) {
       case 'URGENT':
         return EmailPriority.urgent;
-      case 'ACTION':
-      case 'ACTION_REQUIRED':
-        return EmailPriority.action;
       case 'FYI':
         return EmailPriority.fyi;
+      case 'NORMAL':
       default:
         return EmailPriority.normal;
     }
   }
 
-  // Copy with method for updates
   EmailModel copyWith({
     String? id,
     String? senderName,

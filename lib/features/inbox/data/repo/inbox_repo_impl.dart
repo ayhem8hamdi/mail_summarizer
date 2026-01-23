@@ -57,9 +57,9 @@ class InboxRepositoryImpl implements InboxRepository {
               .where((e) => e.priority == EmailPriority.urgent)
               .toList();
           break;
-        case 'action required':
+        case 'normal':
           filteredEmails = emails
-              .where((e) => e.priority == EmailPriority.action)
+              .where((e) => e.priority == EmailPriority.normal)
               .toList();
           break;
         case 'fyi':

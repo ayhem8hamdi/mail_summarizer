@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:inbox_iq/features/inbox/data/email_details_entity.dart';
-import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_body_content.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_action_buttons.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_body_content.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_details_header.dart';
 
 class InboxDetailsBody extends StatelessWidget {
-  final String emailId;
+  final EmailEntity email;
 
-  const InboxDetailsBody({super.key, required this.emailId});
+  const InboxDetailsBody({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Replace with real data from Cubit/BLoC
-    final email = mockEmailDetail;
-
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Padding(
         padding: EdgeInsets.all(_getPadding(context)),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 22,
+                color: Colors.black.withOpacity(0.08),
+                blurRadius: 20,
                 offset: const Offset(0, 4),
                 spreadRadius: 0,
               ),
@@ -34,20 +32,19 @@ class InboxDetailsBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 20),
               // Email Header (Sender, Subject, Priority)
               EmailDetailHeader(email: email),
 
               // Email Body Content
-              EmailBodyContent(body: email.body),
+              EmailBodyContent(body: email.snippet),
 
               // Divider line
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Divider(
-                  height: 0.8,
-                  thickness: 0.6,
-                  color: Colors.grey.shade400,
+                  height: 1,
+                  thickness: 1,
+                  color: Colors.grey.shade200,
                 ),
               ),
 
@@ -70,7 +67,6 @@ class InboxDetailsBody extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

@@ -169,12 +169,10 @@ class EmailCard extends StatelessWidget {
     switch (priority) {
       case EmailPriority.urgent:
         return AppColors.kUrgentRed;
-      case EmailPriority.action:
-        return AppColors.kNeutralYellow;
       case EmailPriority.fyi:
         return AppColors.kPositiveGreen;
       case EmailPriority.normal:
-        return Colors.grey;
+        return AppColors.kNeutralYellow;
     }
   }
 }

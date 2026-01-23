@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:inbox_iq/features/inbox/data/email_details_entity.dart';
 import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/priority_badge.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/sender_avatar.dart';
 
 class EmailDetailHeader extends StatelessWidget {
-  final EmailDetailEntity email;
+  final EmailEntity email;
 
   const EmailDetailHeader({super.key, required this.email});
 
@@ -20,10 +19,7 @@ class EmailDetailHeader extends StatelessWidget {
           Row(
             children: [
               // Avatar
-              SenderAvatar(
-                initial: email.senderInitial ?? email.sender[0],
-                size: 48,
-              ),
+              SenderAvatar(initial: email.senderInitial, size: 48),
 
               const SizedBox(width: 12),
 
@@ -33,7 +29,7 @@ class EmailDetailHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      email.sender,
+                      email.senderName,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
@@ -55,7 +51,7 @@ class EmailDetailHeader extends StatelessWidget {
 
               // Time
               Text(
-                email.time,
+                email.formattedTime,
                 style: const TextStyle(
                   fontSize: 13,
                   color: Color(0xFF94A3B8),
@@ -81,7 +77,7 @@ class EmailDetailHeader extends StatelessWidget {
           const SizedBox(height: 12),
 
           // Priority Badge
-          PriorityBadge(priority: email.priority as EmailPriority),
+          PriorityBadge(priority: email.priority),
         ],
       ),
     );

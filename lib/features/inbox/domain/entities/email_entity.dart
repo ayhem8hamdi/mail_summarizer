@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:intl/intl.dart';
 
-enum EmailPriority { urgent, action, fyi, normal }
+enum EmailPriority { urgent, fyi, normal }
 
 class EmailEntity extends Equatable {
   final String id;
@@ -39,25 +40,26 @@ class EmailEntity extends Equatable {
     required this.isArchived,
   });
 
-  // Get formatted time for display
+  /// Get formatted time for display (HH:mm if today, "Yesterday" if yesterday, DD/MM/YY otherwise)
   String get formattedTime {
     final now = DateTime.now();
-    final difference = now.difference(timestamp);
+    final emailDate = DateTime(timestamp.year, timestamp.month, timestamp.day);
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
 
-    if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} min ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
-    } else if (difference.inDays == 1) {
+    if (emailDate == today) {
+      // Today: Show HH:mm
+      return DateFormat('HH:mm').format(timestamp);
+    } else if (emailDate == yesterday) {
+      // Yesterday
       return 'Yesterday';
-    } else if (difference.inDays < 7) {
-      return '${difference.inDays} days ago';
     } else {
-      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
+      // Older: Show DD/MM/YY
+      return DateFormat('dd/MM/yy').format(timestamp);
     }
   }
 
-  // Get sender initial for avatar
+  /// Get sender initial for avatar
   String get senderInitial {
     return senderName.isNotEmpty ? senderName[0].toUpperCase() : '?';
   }

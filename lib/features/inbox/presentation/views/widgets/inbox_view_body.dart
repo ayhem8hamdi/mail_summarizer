@@ -25,7 +25,6 @@ class InboxViewBody extends StatelessWidget {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                // Header
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(
@@ -43,7 +42,6 @@ class InboxViewBody extends StatelessWidget {
                   ),
                 ),
 
-                // Filter Chips
                 if (state is InboxLoaded || state is InboxRefreshing)
                   _buildFilterChips(context, state),
 
@@ -51,7 +49,6 @@ class InboxViewBody extends StatelessWidget {
                   child: SizedBox(height: AppConstants.spacing16),
                 ),
 
-                // Content based on state
                 if (state is InboxLoading)
                   _buildLoadingState()
                 else if (state is InboxError)
@@ -59,7 +56,6 @@ class InboxViewBody extends StatelessWidget {
                 else if (state is InboxLoaded || state is InboxRefreshing)
                   _buildEmailList(context, state),
 
-                // Bottom spacing
                 SliverToBoxAdapter(
                   child: SizedBox(height: AppConstants.spacing24),
                 ),
@@ -74,7 +70,6 @@ class InboxViewBody extends StatelessWidget {
   Widget _buildFilterChips(BuildContext context, InboxState state) {
     final cubit = context.read<InboxCubit>();
 
-    // Get data from state
     final currentFilter = state is InboxLoaded
         ? state.currentFilter
         : (state as InboxRefreshing).currentFilter;
@@ -89,11 +84,23 @@ class InboxViewBody extends StatelessWidget {
               .where((e) => e.priority == EmailPriority.urgent)
               .length;
 
+    final normalCount = state is InboxLoaded
+        ? state.normalCount
+        : (state as InboxRefreshing).currentEmails
+              .where((e) => e.priority == EmailPriority.normal)
+              .length;
+
+    final fyiCount = state is InboxLoaded
+        ? state.fyiCount
+        : (state as InboxRefreshing).currentEmails
+              .where((e) => e.priority == EmailPriority.fyi)
+              .length;
+
     final filters = [
       {'label': 'All', 'count': totalCount},
       {'label': 'Urgent', 'count': urgentCount},
-      {'label': 'Action Required', 'count': null},
-      {'label': 'FYI', 'count': null},
+      {'label': 'Normal', 'count': normalCount},
+      {'label': 'FYI', 'count': fyiCount},
     ];
 
     return SliverToBoxAdapter(
@@ -156,9 +163,11 @@ class InboxViewBody extends StatelessWidget {
           return EmailCard(
             email: email,
             onTap: () {
+              // Pass the entire email object as JSON string
               context.pushNamed(
                 AppRouter.inboxDetailsScreen,
                 pathParameters: {'emailId': email.id},
+                extra: email, // Pass the email object directly
               );
             },
           );

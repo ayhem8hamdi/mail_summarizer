@@ -14,7 +14,6 @@ class InboxCubit extends Cubit<InboxState> {
 
   String _currentFilter = 'All';
 
-  /// Fetch all emails from API
   Future<void> fetchEmails() async {
     emit(InboxLoading());
 
@@ -29,9 +28,7 @@ class InboxCubit extends Cubit<InboxState> {
     );
   }
 
-  /// Refresh emails (pull to refresh)
   Future<void> refreshEmails() async {
-    // If we already have data, show it while refreshing
     if (state is InboxLoaded) {
       final currentState = state as InboxLoaded;
       emit(
@@ -55,17 +52,14 @@ class InboxCubit extends Cubit<InboxState> {
     );
   }
 
-  /// Change filter (All, Urgent, Action Required, FYI)
   void changeFilter(String filter) {
     if (state is InboxLoaded) {
       _currentFilter = filter;
       final currentState = state as InboxLoaded;
 
-      // Just update the filter, no API call needed
       emit(InboxLoaded(emails: currentState.emails, currentFilter: filter));
     }
   }
 
-  /// Get current filter
   String get currentFilter => _currentFilter;
 }

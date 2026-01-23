@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:inbox_iq/core/utils/bottom_nav_bar.dart';
 import 'package:inbox_iq/features/home/presentation/views/home_view.dart';
+import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/inbox_view.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/inbox_details_view.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/views/onboarding_view.dart';
@@ -37,8 +38,8 @@ abstract class AppRouter {
         name: inboxDetailsScreen,
         path: '/inbox/:emailId',
         builder: (context, state) {
-          final emailId = state.pathParameters['emailId'] ?? '';
-          return InboxDetailsView(emailId: emailId);
+          final email = state.extra as EmailEntity;
+          return InboxDetailsView(email: email);
         },
       ),
 

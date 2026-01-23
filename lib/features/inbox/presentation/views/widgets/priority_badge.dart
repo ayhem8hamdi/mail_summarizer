@@ -9,10 +9,6 @@ class PriorityBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (priority == EmailPriority.normal) {
-      return const SizedBox.shrink();
-    }
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -34,12 +30,10 @@ class PriorityBadge extends StatelessWidget {
     switch (priority) {
       case EmailPriority.urgent:
         return AppColors.kUrgentRed;
-      case EmailPriority.action:
-        return AppColors.kNeutralYellow;
+      case EmailPriority.normal:
+        return const Color(0xFFFF9500); // Orange color
       case EmailPriority.fyi:
         return AppColors.kPositiveGreen;
-      case EmailPriority.normal:
-        return Colors.grey;
     }
   }
 
@@ -47,12 +41,10 @@ class PriorityBadge extends StatelessWidget {
     switch (priority) {
       case EmailPriority.urgent:
         return 'URGENT';
-      case EmailPriority.action:
-        return 'ACTION';
+      case EmailPriority.normal:
+        return 'NORMAL';
       case EmailPriority.fyi:
         return 'FYI';
-      case EmailPriority.normal:
-        return '';
     }
   }
 }
