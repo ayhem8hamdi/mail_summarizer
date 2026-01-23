@@ -3,6 +3,7 @@ import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_action_buttons.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_body_content.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_details_header.dart';
+import 'package:inbox_iq/features/voice_recording/presentation/views/voice_recorder_pop_up.dart';
 
 class InboxDetailsBody extends StatelessWidget {
   final EmailEntity email;
@@ -59,11 +60,11 @@ class InboxDetailsBody extends StatelessWidget {
                   );
                 },
                 onVoiceReply: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Voice reply feature coming soon'),
-                      duration: Duration(seconds: 1),
-                    ),
+                  // Show voice recording dialog
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) => const VoiceRecordingDialog(),
                   );
                 },
               ),

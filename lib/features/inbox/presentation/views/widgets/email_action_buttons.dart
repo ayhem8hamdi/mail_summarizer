@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:inbox_iq/core/utils/app_colors.dart';
 
 class EmailActionButtons extends StatelessWidget {
   final VoidCallback onReply;
@@ -15,53 +14,48 @@ class EmailActionButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Row(
         children: [
-          // Reply Button (Outlined)
-          SizedBox(
-            width: double.infinity,
-            height: 50,
+          // Reply Button
+          Expanded(
             child: OutlinedButton.icon(
               onPressed: onReply,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: const Color(0xFF2563EB),
+                side: const BorderSide(color: Color(0xFF2563EB), width: 1.5),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               icon: const Icon(Icons.reply, size: 20),
               label: const Text(
                 'Reply',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               ),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.kPrimaryBlue,
-                side: BorderSide(
-                  color: AppColors.kPrimaryBlue.withOpacity(0.3),
-                  width: 1.5,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(width: 12),
 
-          // Record Voice Reply Button (Filled)
-          SizedBox(
-            width: double.infinity,
-            height: 50,
+          // Record Voice Reply Button
+          Expanded(
+            flex: 2,
             child: ElevatedButton.icon(
               onPressed: onVoiceReply,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
               icon: const Icon(Icons.mic, size: 20),
               label: const Text(
                 'Record Voice Reply',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.kPrimaryBlue,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
               ),
             ),
           ),
