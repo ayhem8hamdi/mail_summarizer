@@ -1,3 +1,4 @@
+// lib/features/home/domain/use_cases/get_daily_summary_usecase.dart
 import 'package:dartz/dartz.dart';
 import 'package:inbox_iq/core/failure/failure.dart';
 import 'package:inbox_iq/features/home/domain/entities/dailysummary_entity.dart';
@@ -8,7 +9,9 @@ class GetDailySummaryUseCase {
 
   GetDailySummaryUseCase(this.repository);
 
-  Future<Either<Failure, DailySummary>> call() async {
-    return await repository.getDailySummary();
+  Future<Either<Failure, DailySummary>> call({
+    bool forceRefresh = false,
+  }) async {
+    return await repository.getDailySummary(forceRefresh: forceRefresh);
   }
 }

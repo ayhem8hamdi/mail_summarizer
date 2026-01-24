@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:inbox_iq/core/failure/exceptions.dart';
 import 'package:inbox_iq/features/home/data/models/daily_summary_model.dart';
-import 'package:inbox_iq/features/home/data/remote/daily_summary_remote_data_source_repo.dart';
+import 'package:inbox_iq/features/home/data/remote_data_source/daily_summary_remote_data_source_repo.dart';
 
 class DailySummaryRemoteDataSourceImpl implements DailySummaryRemoteDataSource {
   final Dio dio;
