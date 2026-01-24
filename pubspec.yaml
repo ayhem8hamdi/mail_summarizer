@@ -51,6 +51,7 @@ dependencies:
   http_parser: ^4.1.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:
