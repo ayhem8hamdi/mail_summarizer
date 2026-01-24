@@ -10,13 +10,19 @@ import 'package:inbox_iq/features/home/domain/use_cases/get_daily_summary_usecas
 import 'package:inbox_iq/features/home/domain/use_cases/trigger_workflow_usecase.dart';
 import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source.dart';
 import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source_impl.dart';
-
 import 'package:inbox_iq/features/inbox/data/repo/inbox_repo_impl.dart';
 import 'package:inbox_iq/features/inbox/domain/repos/inbox_repostry.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/filtered_emails_usecase.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/get_email_by_id_usecase.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/get_emails_use_case.dart';
-
+import 'package:inbox_iq/features/voice_to_email/data/remote/voice_to_email_remote_data_source.dart';
+import 'package:inbox_iq/features/voice_to_email/data/remote/voice_to_email_remote_data_source_impl.dart';
+import 'package:inbox_iq/features/voice_to_email/data/repo/voice_to_email_repo_impl.dart';
+import 'package:inbox_iq/features/voice_to_email/domain/repo/voice_to_email_repo.dart';
+import 'package:inbox_iq/features/voice_to_email/domain/usecase/generate_email_from_voice_usecase.dart';
+import 'package:inbox_iq/features/voice_to_email/domain/usecase/send_email_use_case.dart';
+import 'package:inbox_iq/features/voice_to_email/presentation/manager/email_draft_cubit/email_draft_cubit.dart';
+import 'package:inbox_iq/features/voice_to_email/presentation/manager/voice_recorder_cubit/voice_recorder_cubit.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 final sl = GetIt.instance;
@@ -93,4 +99,34 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetEmailsUseCase(sl()));
   sl.registerLazySingleton(() => GetFilteredEmailsUseCase(sl()));
   sl.registerLazySingleton(() => GetEmailByIdUseCase(sl()));
+
+  //! =========================
+  //! Feature: Voice Email (Refactored)
+  //! =========================
+  // Data sources
+  sl.registerLazySingleton<VoiceEmailRemoteDataSource>(
+    () => VoiceEmailRemoteDataSourceImpl(
+      dio: sl(),
+      webhookUrl: sl<AppConfig>().n8nWebhookUrlVoiceToMail,
+      sendEmailWebhookUrl: sl<AppConfig>().n8nWebhookUrlSendEmail,
+    ),
+  );
+
+  // Repository
+  sl.registerLazySingleton<VoiceEmailRepository>(
+    () => VoiceEmailRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GenerateEmailFromVoiceUseCase(sl()));
+  sl.registerLazySingleton(() => SendEmailUseCase(sl()));
+
+  // Cubits (Factory - new instance each time)
+  sl.registerFactory(() => VoiceRecorderCubit());
+  sl.registerFactory(
+    () => EmailDraftCubit(
+      generateEmailFromVoiceUseCase: sl(),
+      sendEmailUseCase: sl(),
+    ),
+  );
 }

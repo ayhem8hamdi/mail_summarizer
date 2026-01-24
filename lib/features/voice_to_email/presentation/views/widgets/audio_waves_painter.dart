@@ -1,6 +1,4 @@
-// Audio wave painter for visualization
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
 class AudioWavePainter extends CustomPainter {
@@ -23,7 +21,6 @@ class AudioWavePainter extends CustomPainter {
     for (int i = 0; i < barCount; i++) {
       final x = i * barWidth + barWidth / 2;
 
-      // Create varied heights with animation
       final heightFactor = math.sin(
         (i / barCount * math.pi * 4) + (animation * math.pi * 2),
       );
@@ -32,7 +29,6 @@ class AudioWavePainter extends CustomPainter {
           (size.height / 2) *
           (0.3 + (heightFactor * 0.4) + (randomFactor * 0.3));
 
-      // Draw vertical line (bar)
       canvas.drawLine(
         Offset(x, size.height / 2 - height),
         Offset(x, size.height / 2 + height),

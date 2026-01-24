@@ -44,6 +44,11 @@ dependencies:
   get_it: ^9.2.0
   flutter_bloc: ^9.1.1
   internet_connection_checker: ^3.0.1
+  record: ^6.1.2
+  permission_handler: ^12.0.1
+  path_provider: ^2.1.5
+  record_web: ^1.2.2
+  http_parser: ^4.1.2
 
 dev_dependencies:
   flutter_test:

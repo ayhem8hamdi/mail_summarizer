@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_action_buttons.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_body_content.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_details_header.dart';
-import 'package:inbox_iq/features/voice_recording/presentation/views/voice_recorder_pop_up.dart';
+import 'package:inbox_iq/features/voice_to_email/presentation/manager/email_draft_cubit/email_draft_cubit.dart';
+import 'package:inbox_iq/features/voice_to_email/presentation/manager/voice_recorder_cubit/voice_recorder_cubit.dart';
+import 'package:inbox_iq/features/voice_to_email/presentation/views/voice_recorder_dialog.dart';
 
 class InboxDetailsBody extends StatelessWidget {
   final EmailEntity email;
-
   const InboxDetailsBody({super.key, required this.email});
 
   @override
@@ -33,13 +35,8 @@ class InboxDetailsBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Email Header (Sender, Subject, Priority)
               EmailDetailHeader(email: email),
-
-              // Email Body Content
               EmailBodyContent(body: email.snippet),
-
-              // Divider line
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Divider(
@@ -48,8 +45,6 @@ class InboxDetailsBody extends StatelessWidget {
                   color: Colors.grey.shade200,
                 ),
               ),
-
-              // Action Buttons
               EmailActionButtons(
                 onReply: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -60,11 +55,23 @@ class InboxDetailsBody extends StatelessWidget {
                   );
                 },
                 onVoiceReply: () {
-                  // Show voice recording dialog
+                  // Get existing cubit instances from parent context
+                  final voiceRecorderCubit = context.read<VoiceRecorderCubit>();
+                  final emailDraftCubit = context.read<EmailDraftCubit>();
+
                   showDialog(
                     context: context,
                     barrierDismissible: false,
-                    builder: (context) => const VoiceRecordingDialog(),
+                    builder: (dialogContext) => MultiBlocProvider(
+                      providers: [
+                        // Pass existing instances to dialog
+                        BlocProvider.value(value: voiceRecorderCubit),
+                        BlocProvider.value(value: emailDraftCubit),
+                      ],
+                      child: const VoiceRecordingDialog(
+                        userId: 'test_user_123', // TODO: Get from auth
+                      ),
+                    ),
                   );
                 },
               ),
