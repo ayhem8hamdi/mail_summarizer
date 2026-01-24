@@ -35,11 +35,22 @@ class _VoiceRecordingDialogState extends State<VoiceRecordingDialog> {
   }
 
   void _showGeneratedEmailDialog() {
+    // Get the cubits from current context before popping
+    final emailDraftCubit = context.read<EmailDraftCubit>();
+    final voiceRecorderCubit = context.read<VoiceRecorderCubit>();
+
     Navigator.of(context).pop();
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const GeneratedResponseDialog(),
+      builder: (dialogContext) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: emailDraftCubit),
+          BlocProvider.value(value: voiceRecorderCubit),
+        ],
+        child: const GeneratedResponseDialog(),
+      ),
     );
   }
 
@@ -61,6 +72,7 @@ class _VoiceRecordingDialogState extends State<VoiceRecordingDialog> {
         BlocListener<VoiceRecorderCubit, VoiceRecorderState>(
           listener: (context, state) {
             if (state is VoiceRecorderSuccess) {
+              // Trigger email generation
               context.read<EmailDraftCubit>().generateEmailFromVoice(
                 audioFilePath: state.audioFilePath,
                 userId: widget.userId,
@@ -82,20 +94,27 @@ class _VoiceRecordingDialogState extends State<VoiceRecordingDialog> {
       ],
       child: BlocBuilder<VoiceRecorderCubit, VoiceRecorderState>(
         builder: (context, voiceState) {
-          final recordingSeconds = voiceState is VoiceRecorderRecording
-              ? voiceState.durationInSeconds
-              : 0;
+          return BlocBuilder<EmailDraftCubit, EmailDraftState>(
+            builder: (context, draftState) {
+              final recordingSeconds = voiceState is VoiceRecorderRecording
+                  ? voiceState.durationInSeconds
+                  : 0;
 
-          final isProcessing = voiceState is VoiceRecorderProcessing;
+              // Show loading if either recording is processing OR email is being generated
+              final isProcessing =
+                  voiceState is VoiceRecorderProcessing ||
+                  draftState is EmailDraftGenerating;
 
-          return Dialog(
-            backgroundColor: Colors.transparent,
-            child: RecordingDialogContent(
-              recordingSeconds: recordingSeconds,
-              isProcessing: isProcessing,
-              onCancel: _handleCancel,
-              onStopAndGenerate: _handleStopAndGenerate,
-            ),
+              return Dialog(
+                backgroundColor: Colors.transparent,
+                child: RecordingDialogContent(
+                  recordingSeconds: recordingSeconds,
+                  isProcessing: isProcessing,
+                  onCancel: _handleCancel,
+                  onStopAndGenerate: _handleStopAndGenerate,
+                ),
+              );
+            },
           );
         },
       ),

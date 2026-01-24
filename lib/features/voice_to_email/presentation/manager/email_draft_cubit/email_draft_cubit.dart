@@ -21,11 +21,12 @@ class EmailDraftCubit extends Cubit<EmailDraftState> {
     required String audioFilePath,
     required String userId,
   }) async {
+    emit(const EmailDraftGenerating());
     try {
-      File audioFile;
+      dynamic audioFile;
 
       if (kIsWeb) {
-        // For web: audioFilePath is a blob URL like "blob:http://localhost:8080/..."
+        // For web: audioFilePath is a blob URL
         print('🌐 Processing web blob: $audioFilePath');
 
         // Use Dio to fetch the blob data
@@ -36,11 +37,11 @@ class EmailDraftCubit extends Cubit<EmailDraftState> {
         );
 
         if (response.statusCode == 200 && response.data != null) {
-          final bytes = response.data!;
+          final bytes = Uint8List.fromList(response.data!);
           print('📊 Downloaded ${bytes.length} bytes from blob');
 
-          // Create a file object from bytes (web-compatible)
-          audioFile = File.fromRawPath(Uint8List.fromList(bytes));
+          // For web, we'll pass the bytes directly wrapped in a WebFile
+          audioFile = WebFile(bytes, 'voice_recording.wav');
         } else {
           emit(
             const EmailDraftError(message: 'Failed to load audio recording'),
@@ -128,4 +129,18 @@ class EmailDraftCubit extends Cubit<EmailDraftState> {
   void reset() {
     emit(const EmailDraftInitial());
   }
+}
+
+// Helper class to wrap web audio bytes
+class WebFile {
+  final Uint8List bytes;
+  final String filename;
+
+  WebFile(this.bytes, this.filename);
+
+  // Mimic File API for web
+  Future<Uint8List> readAsBytes() async => bytes;
+  String get path => filename;
+  Future<bool> exists() async => true;
+  Future<int> length() async => bytes.length;
 }

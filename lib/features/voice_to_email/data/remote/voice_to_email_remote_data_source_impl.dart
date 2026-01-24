@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http_parser/http_parser.dart';
@@ -19,7 +20,7 @@ class VoiceEmailRemoteDataSourceImpl implements VoiceEmailRemoteDataSource {
 
   @override
   Future<VoiceEmailResponseModel> generateEmailFromVoice({
-    required File audioFile,
+    required dynamic audioFile, // Changed from File to dynamic
     required String userId,
     required DateTime timestamp,
   }) async {
@@ -27,44 +28,48 @@ class VoiceEmailRemoteDataSourceImpl implements VoiceEmailRemoteDataSource {
       FormData formData;
 
       if (kIsWeb) {
-        // For web platform
+        // For web platform - audioFile is WebFile
         print('🌐 Preparing web audio upload...');
 
-        // Read audio file as bytes
-        final bytes = await audioFile.readAsBytes();
+        // Get bytes from WebFile
+        final bytes = await audioFile.readAsBytes() as Uint8List;
+        final filename = audioFile.filename ?? 'voice_recording.wav';
+
         print('📊 Audio bytes length: ${bytes.length}');
 
         formData = FormData.fromMap({
           'audioFile': MultipartFile.fromBytes(
             bytes,
-            filename: 'voice_recording.wav',
+            filename: filename,
             contentType: MediaType('audio', 'wav'),
           ),
           'userId': userId,
           'timestamp': timestamp.toIso8601String(),
         });
       } else {
-        // For mobile platforms (Android/iOS)
+        // For mobile platforms - audioFile is File
         print('📱 Preparing mobile audio upload...');
 
+        final file = audioFile as File;
+
         // Get the file name
-        final fileName = audioFile.path.split('/').last;
+        final fileName = file.path.split('/').last;
         print('📁 File: $fileName');
 
         // Verify file exists
-        if (!await audioFile.exists()) {
+        if (!await file.exists()) {
           throw ServerException(
             message: 'Audio file not found',
-            details: 'File does not exist at path: ${audioFile.path}',
+            details: 'File does not exist at path: ${file.path}',
           );
         }
 
-        final fileSize = await audioFile.length();
+        final fileSize = await file.length();
         print('📊 File size: ${fileSize / 1024} KB');
 
         formData = FormData.fromMap({
           'audioFile': await MultipartFile.fromFile(
-            audioFile.path,
+            file.path,
             filename: fileName,
           ),
           'userId': userId,

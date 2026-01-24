@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:inbox_iq/core/connection_checker.dart/network_info.dart';
 import 'package:inbox_iq/core/failure/failure.dart';
@@ -17,7 +16,7 @@ class VoiceEmailRepositoryImpl implements VoiceEmailRepository {
 
   @override
   Future<Either<Failure, VoiceEmailResponseEntity>> generateEmailFromVoice({
-    required File audioFile,
+    required dynamic audioFile,
     required String userId,
     required DateTime timestamp,
   }) async {

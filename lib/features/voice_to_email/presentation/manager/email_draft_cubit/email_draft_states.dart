@@ -12,6 +12,10 @@ class EmailDraftInitial extends EmailDraftState {
   const EmailDraftInitial();
 }
 
+class EmailDraftGenerating extends EmailDraftState {
+  const EmailDraftGenerating();
+}
+
 class EmailDraftSuccess extends EmailDraftState {
   final VoiceEmailResponseEntity response;
 

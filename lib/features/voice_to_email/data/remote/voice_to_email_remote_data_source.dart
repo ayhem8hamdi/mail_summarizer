@@ -1,10 +1,8 @@
-import 'dart:io';
-
 import 'package:inbox_iq/features/voice_to_email/data/models/email_draft_model.dart';
 
 abstract class VoiceEmailRemoteDataSource {
   Future<VoiceEmailResponseModel> generateEmailFromVoice({
-    required File audioFile,
+    required dynamic audioFile, // Changed from File to dynamic
     required String userId,
     required DateTime timestamp,
   });

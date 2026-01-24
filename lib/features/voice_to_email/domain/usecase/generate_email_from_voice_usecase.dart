@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:inbox_iq/core/failure/failure.dart';
 import 'package:inbox_iq/features/voice_to_email/domain/entities/voice_to_email_response_entity.dart';
@@ -10,7 +9,7 @@ class GenerateEmailFromVoiceUseCase {
   GenerateEmailFromVoiceUseCase(this.repository);
 
   Future<Either<Failure, VoiceEmailResponseEntity>> call({
-    required File audioFile,
+    required dynamic audioFile, // Changed from File to dynamic
     required String userId,
     required DateTime timestamp,
   }) async {
