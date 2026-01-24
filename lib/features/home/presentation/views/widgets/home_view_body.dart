@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
 import 'package:inbox_iq/features/home/presentation/manager/daily_summary_cubit/daily_summary_cubit.dart';
 import 'package:inbox_iq/features/home/presentation/manager/daily_summary_cubit/daily_summary_cubit_states.dart';
+import 'package:inbox_iq/features/home/presentation/views/shimmer_widgets/shimmer_loading_widget.dart';
 import 'package:inbox_iq/features/home/presentation/views/widgets/Inbox_stats_card.dart';
 import 'package:inbox_iq/features/home/presentation/views/widgets/daily_summary_card.dart';
 import 'package:inbox_iq/features/home/presentation/views/widgets/error_widget..dart';
@@ -34,25 +35,28 @@ class HomeViewBody extends StatelessWidget {
                   ),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      SizedBox(height: AppConstants.spacing24),
-
-                      // ✅ Loading State
-                      if (state is DailySummaryLoading) _buildLoadingState(),
+                      // ✅ Loading State with Shimmer
+                      if (state is DailySummaryLoading)
+                        const HomeShimmerLoading(),
 
                       // ✅ Error State
                       if (state is DailySummaryError)
-                        ErrorRetryWidget(
-                          message: state.message,
-                          onRetry: () {
-                            context
-                                .read<DailySummaryCubit>()
-                                .fetchDailySummary();
-                          },
+                        Padding(
+                          padding: EdgeInsets.only(top: AppConstants.spacing24),
+                          child: ErrorRetryWidget(
+                            message: state.message,
+                            onRetry: () {
+                              context
+                                  .read<DailySummaryCubit>()
+                                  .fetchDailySummary();
+                            },
+                          ),
                         ),
 
                       // ✅ Success State or Refreshing
                       if (state is DailySummaryLoaded ||
                           state is DailySummaryRefreshing) ...[
+                        SizedBox(height: AppConstants.spacing24),
                         InboxStatsCard(
                           summary: state is DailySummaryLoaded
                               ? state.summary
@@ -73,9 +77,8 @@ class HomeViewBody extends StatelessWidget {
                               : (state as DailySummaryRefreshing)
                                     .currentSummary,
                         ),
+                        SizedBox(height: AppConstants.spacing32),
                       ],
-
-                      SizedBox(height: AppConstants.spacing32),
                     ]),
                   ),
                 ),
@@ -84,15 +87,6 @@ class HomeViewBody extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildLoadingState() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(40.0),
-        child: CircularProgressIndicator(),
-      ),
     );
   }
 

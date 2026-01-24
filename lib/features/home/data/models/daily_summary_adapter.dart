@@ -41,7 +41,7 @@ class EmailStatisticsAdapter extends TypeAdapter<EmailStatisticsModel> {
   EmailStatisticsModel read(BinaryReader reader) {
     return EmailStatisticsModel(
       urgent: reader.readInt(),
-      actionRequired: reader.readInt(),
+      normal: reader.readInt(),
       fyi: reader.readInt(),
       read: reader.readInt(),
     );
@@ -50,7 +50,7 @@ class EmailStatisticsAdapter extends TypeAdapter<EmailStatisticsModel> {
   @override
   void write(BinaryWriter writer, EmailStatisticsModel obj) {
     writer.writeInt(obj.urgent);
-    writer.writeInt(obj.actionRequired);
+    writer.writeInt(obj.normal);
     writer.writeInt(obj.fyi);
     writer.writeInt(obj.read);
   }

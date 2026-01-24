@@ -57,7 +57,7 @@ class InboxStatsCard extends StatelessWidget {
 
           SizedBox(height: AppConstants.spacing16),
 
-          // Stats Row from API
+          // ✅ Updated Stats Row - Show Urgent, Normal, FYI
           Row(
             children: [
               StatItem(
@@ -67,15 +67,15 @@ class InboxStatsCard extends StatelessWidget {
               ),
               SizedBox(width: AppConstants.spacing24),
               StatItem(
-                icon: Icons.task_alt_rounded,
-                count: summary.statistics.actionRequired,
-                label: 'Actions',
+                icon: Icons.email_rounded, // ✅ Changed icon
+                count: summary.statistics.normal, // ✅ Changed to normal
+                label: 'Normal', // ✅ Changed label
               ),
               SizedBox(width: AppConstants.spacing24),
               StatItem(
-                icon: Icons.mark_email_read_rounded,
-                count: summary.statistics.read,
-                label: 'Read',
+                icon: Icons.info_outline_rounded, // ✅ Changed icon
+                count: summary.statistics.fyi,
+                label: 'FYI', // ✅ Changed label
               ),
             ],
           ),

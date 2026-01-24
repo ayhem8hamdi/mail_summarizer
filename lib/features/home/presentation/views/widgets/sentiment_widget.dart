@@ -17,12 +17,8 @@ class InboxMoodCard extends StatelessWidget {
     // Calculate percentages for the bar
     final total = summary.totalEmails > 0 ? summary.totalEmails : 1;
     final urgentPercent = summary.statistics.urgent / total;
-    final notImportantPercent =
-        (summary.totalEmails -
-            summary.statistics.urgent -
-            summary.statistics.actionRequired) /
-        total;
-    final fyiPercent = summary.statistics.actionRequired / total;
+    final normalPercent = summary.statistics.normal / total; // ✅ Changed
+    final fyiPercent = summary.statistics.fyi / total; // ✅ Changed
 
     return Container(
       decoration: BoxDecoration(
@@ -72,7 +68,7 @@ class InboxMoodCard extends StatelessWidget {
                 // Segmented Bar
                 _buildSegmentedBar(
                   urgentPercent: urgentPercent,
-                  notImportantPercent: notImportantPercent,
+                  normalPercent: normalPercent, // ✅ Changed parameter name
                   fyiPercent: fyiPercent,
                 ),
               ],
@@ -86,7 +82,7 @@ class InboxMoodCard extends StatelessWidget {
   /// Builds the segmented progress bar with 3 colors
   Widget _buildSegmentedBar({
     required double urgentPercent,
-    required double notImportantPercent,
+    required double normalPercent, // ✅ Changed parameter name
     required double fyiPercent,
   }) {
     return Container(
@@ -106,14 +102,14 @@ class InboxMoodCard extends StatelessWidget {
                 child: Container(color: AppColors.kUrgentRed),
               ),
 
-            // Not Important segment (Yellow)
-            if (notImportantPercent > 0)
+            // Normal segment (Yellow)  // ✅ Updated comment
+            if (normalPercent > 0) // ✅ Changed variable
               Expanded(
-                flex: (notImportantPercent * 100).toInt(),
+                flex: (normalPercent * 100).toInt(), // ✅ Changed variable
                 child: Container(color: AppColors.kNeutralYellow),
               ),
 
-            // FYI/Action Required segment (Green)
+            // FYI segment (Green)  // ✅ Updated comment
             if (fyiPercent > 0)
               Expanded(
                 flex: (fyiPercent * 100).toInt(),
