@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:inbox_iq/features/home/data/local_data_source.dart/daily_summary_local_data_source.dart';
+import 'package:inbox_iq/features/home/data/local_data_source.dart/daily_summary_local_data_source_impl.dart';
+import 'package:inbox_iq/features/home/data/models/daily_summary_adapter.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:inbox_iq/core/config/app_config.dart';
 import 'package:inbox_iq/core/connection_checker.dart/network_info.dart';
-import 'package:inbox_iq/features/home/data/remote/daily_summary_remote_data_source_repo.dart';
-import 'package:inbox_iq/features/home/data/remote/daily_summary_remote_data_source_repo_impl.dart';
+import 'package:inbox_iq/features/home/data/remote_data_source/daily_summary_remote_data_source_repo.dart';
+import 'package:inbox_iq/features/home/data/remote_data_source/daily_summary_remote_data_source_repo_impl.dart';
 import 'package:inbox_iq/features/home/data/repo/daily_summary_repo_impl.dart';
 import 'package:inbox_iq/features/home/domain/repo/home_repo.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/get_daily_summary_usecase.dart';
@@ -23,11 +28,22 @@ import 'package:inbox_iq/features/voice_to_email/domain/usecase/generate_email_f
 import 'package:inbox_iq/features/voice_to_email/domain/usecase/send_email_use_case.dart';
 import 'package:inbox_iq/features/voice_to_email/presentation/manager/email_draft_cubit/email_draft_cubit.dart';
 import 'package:inbox_iq/features/voice_to_email/presentation/manager/voice_recorder_cubit/voice_recorder_cubit.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  //! =========================
+  //! Hive (Local Storage)
+  //! =========================
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(DailySummaryAdapter());
+  Hive.registerAdapter(EmailStatisticsAdapter());
+  Hive.registerAdapter(InboxMoodAdapter());
+  Hive.registerAdapter(QuickActionAdapter());
+
+  sl.registerLazySingleton<HiveInterface>(() => Hive);
+
   //! =========================
   //! External Dependencies
   //! =========================
@@ -70,9 +86,17 @@ Future<void> init() async {
     ),
   );
 
+  sl.registerLazySingleton<DailySummaryLocalDataSource>(
+    () => DailySummaryLocalDataSourceImpl(hive: sl()),
+  );
+
   // Repository
   sl.registerLazySingleton<DailySummaryRepository>(
-    () => DailySummaryRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+    () => DailySummaryRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
   );
 
   // Use Cases
@@ -101,7 +125,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetEmailByIdUseCase(sl()));
 
   //! =========================
-  //! Feature: Voice Email (Refactored)
+  //! Feature: Voice Email
   //! =========================
   // Data sources
   sl.registerLazySingleton<VoiceEmailRemoteDataSource>(
@@ -121,7 +145,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GenerateEmailFromVoiceUseCase(sl()));
   sl.registerLazySingleton(() => SendEmailUseCase(sl()));
 
-  // Cubits (Factory - new instance each time)
+  // Cubits
   sl.registerFactory(() => VoiceRecorderCubit());
   sl.registerFactory(
     () => EmailDraftCubit(
