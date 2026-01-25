@@ -1,9 +1,12 @@
+// lib/features/on_boarding/presentation/views/onboarding_view.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:inbox_iq/core/DI/di.dart';
 import 'package:inbox_iq/core/router/app_router.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
-import 'package:inbox_iq/features/on_boarding/data/on_boarding_page_model.dart';
+import 'package:inbox_iq/features/on_boarding/data/models/on_boarding_page_model.dart';
+import 'package:inbox_iq/features/on_boarding/data/repo/complete_onboarding_use_case.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/widgets/next_page_button.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/widgets/onboarding_page.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/widgets/page_dots.dart';
@@ -24,21 +27,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingPageModel> _pages = [
     OnboardingPageModel(
       emoji: '✨',
-
       title: 'AI-Powered Intelligence',
       description:
           'Smart email analysis with sentiment detection, priority sorting, and automated categorization to help you focus on what matters most.',
     ),
     OnboardingPageModel(
       emoji: '⚡',
-
       title: 'Lightning-Fast Replies',
       description:
           'Generate perfect email responses in seconds with AI-powered smart replies. Record voice messages and let AI convert them to professional emails.',
     ),
     OnboardingPageModel(
       emoji: '🔒',
-
       title: 'Secure & Private',
       description:
           'Your data is protected with enterprise-grade security. We use OAuth 2.0 authentication and never store your emails on our servers.',
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         curve: AppConstants.animationCurve,
       );
     } else {
-      completeOnboarding();
+      _completeOnboarding();
     }
   }
 
@@ -76,11 +76,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         duration: AppConstants.animationDuration,
         curve: AppConstants.animationCurve,
       );
+    } else {
+      _completeOnboarding();
     }
   }
 
-  void completeOnboarding() {
-    context.goNamed(AppRouter.homeScreen);
+  Future<void> _completeOnboarding() async {
+    // Mark onboarding as completed
+    final completeOnboardingUseCase = sl<CompleteOnboardingUseCase>();
+    await completeOnboardingUseCase();
+
+    // Navigate to home
+    if (mounted) {
+      context.goNamed(AppRouter.homeScreen);
+    }
   }
 
   @override

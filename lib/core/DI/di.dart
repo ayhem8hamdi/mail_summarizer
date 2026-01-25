@@ -1,9 +1,16 @@
+// lib/core/service_locator.dart
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:inbox_iq/core/services/local_storage_service/local_storage_service.dart';
+import 'package:inbox_iq/core/services/local_storage_service/local_storage_service_impl.dart';
 import 'package:inbox_iq/features/home/data/local_data_source.dart/daily_summary_local_data_source.dart';
 import 'package:inbox_iq/features/home/data/local_data_source.dart/daily_summary_local_data_source_impl.dart';
 import 'package:inbox_iq/features/home/data/models/daily_summary_adapter.dart';
+import 'package:inbox_iq/features/on_boarding/data/repo/complete_onboarding_use_case.dart';
+import 'package:inbox_iq/features/on_boarding/data/repo/on_boarding_repo.dart';
+import 'package:inbox_iq/features/on_boarding/data/repo/on_boarding_repo_impl.dart';
+import 'package:inbox_iq/features/on_boarding/data/repo/onboarding_status_use_case.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:inbox_iq/core/config/app_config.dart';
 import 'package:inbox_iq/core/connection_checker.dart/network_info.dart';
@@ -31,6 +38,7 @@ import 'package:inbox_iq/features/voice_to_email/domain/usecase/generate_email_f
 import 'package:inbox_iq/features/voice_to_email/domain/usecase/send_email_use_case.dart';
 import 'package:inbox_iq/features/voice_to_email/presentation/manager/email_draft_cubit/email_draft_cubit.dart';
 import 'package:inbox_iq/features/voice_to_email/presentation/manager/voice_recorder_cubit/voice_recorder_cubit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
@@ -54,6 +62,9 @@ Future<void> init() async {
   //! =========================
   //! External Dependencies
   //! =========================
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+
   sl.registerLazySingleton<InternetConnectionChecker>(
     () => InternetConnectionChecker.createInstance(),
   );
@@ -81,6 +92,25 @@ Future<void> init() async {
   //! =========================
   sl.registerLazySingleton<AppConfig>(() => AppConfig());
   sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
+
+  //! =========================
+  //! Core - Local Storage
+  //! =========================
+  sl.registerLazySingleton<LocalStorageService>(
+    () => LocalStorageServiceImpl(sl<SharedPreferences>()),
+  );
+
+  //! =========================
+  //! Feature: Onboarding
+  //! =========================
+  // Repository
+  sl.registerLazySingleton<OnboardingRepository>(
+    () => OnboardingRepositoryImpl(sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => CheckOnboardingStatusUseCase(sl()));
+  sl.registerLazySingleton(() => CompleteOnboardingUseCase(sl()));
 
   //! =========================
   //! Feature: Home

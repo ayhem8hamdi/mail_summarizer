@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:inbox_iq/core/utils/app_colors.dart';
 import 'package:inbox_iq/core/utils/app_styles.dart';
 import 'package:inbox_iq/core/utils/constants.dart';
-import 'package:inbox_iq/features/on_boarding/data/on_boarding_page_model.dart';
+import 'package:inbox_iq/features/on_boarding/data/models/on_boarding_page_model.dart';
 import 'package:inbox_iq/features/on_boarding/presentation/widgets/emoji_display.dart';
 
 class OnboardingPageWidget extends StatelessWidget {
