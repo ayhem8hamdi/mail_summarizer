@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:inbox_iq/core/failure/exceptions.dart';
 import 'package:inbox_iq/features/inbox/data/models/email_model.dart';
-import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source.dart';
+import 'package:inbox_iq/features/inbox/data/remote_data_source/inbox_remote_data_source.dart';
 
 class InboxRemoteDataSourceImpl implements InboxRemoteDataSource {
   final Dio dio;

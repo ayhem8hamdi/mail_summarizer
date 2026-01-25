@@ -1,3 +1,4 @@
+// lib/features/inbox/presentation/manager/inbox_cubit/inbox_cubit.dart
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/filtered_emails_usecase.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/get_emails_use_case.dart';
@@ -14,10 +15,12 @@ class InboxCubit extends Cubit<InboxState> {
 
   String _currentFilter = 'All';
 
+  /// Initial fetch - will use cache if available, otherwise fetch from API
   Future<void> fetchEmails() async {
     emit(InboxLoading());
 
-    final result = await getEmailsUseCase();
+    // Use cache if available (forceRefresh: false)
+    final result = await getEmailsUseCase(forceRefresh: false);
 
     result.fold(
       (failure) => emit(
@@ -28,6 +31,7 @@ class InboxCubit extends Cubit<InboxState> {
     );
   }
 
+  /// Refresh emails - always fetches from API and updates cache (called on pull-to-refresh)
   Future<void> refreshEmails() async {
     if (state is InboxLoaded) {
       final currentState = state as InboxLoaded;
@@ -41,12 +45,26 @@ class InboxCubit extends Cubit<InboxState> {
       emit(InboxLoading());
     }
 
-    final result = await getEmailsUseCase();
+    // FORCE REFRESH from remote API (forceRefresh: true)
+    final result = await getEmailsUseCase(forceRefresh: true);
 
     result.fold(
-      (failure) => emit(
-        InboxError(message: failure.userMessage, details: failure.details),
-      ),
+      (failure) {
+        // If refresh fails but we have current emails, keep showing them
+        if (state is InboxRefreshing) {
+          final refreshingState = state as InboxRefreshing;
+          emit(
+            InboxLoaded(
+              emails: refreshingState.currentEmails,
+              currentFilter: refreshingState.currentFilter,
+            ),
+          );
+        } else {
+          emit(
+            InboxError(message: failure.userMessage, details: failure.details),
+          );
+        }
+      },
       (emails) =>
           emit(InboxLoaded(emails: emails, currentFilter: _currentFilter)),
     );

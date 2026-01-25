@@ -8,7 +8,7 @@ void main() async {
 
   await di.init();
 
-  runApp(DevicePreview(enabled: true, builder: (context) => const InboxIq()));
+  runApp(DevicePreview(enabled: false, builder: (context) => const InboxIq()));
 }
 
 class InboxIq extends StatelessWidget {

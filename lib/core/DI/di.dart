@@ -13,8 +13,11 @@ import 'package:inbox_iq/features/home/data/repo/daily_summary_repo_impl.dart';
 import 'package:inbox_iq/features/home/domain/repo/home_repo.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/get_daily_summary_usecase.dart';
 import 'package:inbox_iq/features/home/domain/use_cases/trigger_workflow_usecase.dart';
-import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source.dart';
-import 'package:inbox_iq/features/inbox/data/remote/inbox_remote_data_source_impl.dart';
+import 'package:inbox_iq/features/inbox/data/local_data_source/inbox_local_data_source.dart';
+import 'package:inbox_iq/features/inbox/data/local_data_source/inbox_local_data_source_impl.dart';
+import 'package:inbox_iq/features/inbox/data/models/email_model_adapter.dart';
+import 'package:inbox_iq/features/inbox/data/remote_data_source/inbox_remote_data_source.dart';
+import 'package:inbox_iq/features/inbox/data/remote_data_source/inbox_remote_data_source_impl.dart';
 import 'package:inbox_iq/features/inbox/data/repo/inbox_repo_impl.dart';
 import 'package:inbox_iq/features/inbox/domain/repos/inbox_repostry.dart';
 import 'package:inbox_iq/features/inbox/domain/usecases/filtered_emails_usecase.dart';
@@ -37,10 +40,14 @@ Future<void> init() async {
   //! =========================
   await Hive.initFlutter();
 
+  // Home feature adapters
   Hive.registerAdapter(DailySummaryAdapter());
   Hive.registerAdapter(EmailStatisticsAdapter());
   Hive.registerAdapter(InboxMoodAdapter());
   Hive.registerAdapter(QuickActionAdapter());
+
+  // Inbox feature adapters
+  Hive.registerAdapter(EmailModelAdapter());
 
   sl.registerLazySingleton<HiveInterface>(() => Hive);
 
@@ -106,7 +113,12 @@ Future<void> init() async {
   //! =========================
   //! Feature: Inbox
   //! =========================
-  // Data sources
+  // Local data source
+  sl.registerLazySingleton<InboxLocalDataSource>(
+    () => InboxLocalDataSourceImpl(),
+  );
+
+  // Remote data source
   sl.registerLazySingleton<InboxRemoteDataSource>(
     () => InboxRemoteDataSourceImpl(
       dio: sl(),
@@ -116,7 +128,11 @@ Future<void> init() async {
 
   // Repository
   sl.registerLazySingleton<InboxRepository>(
-    () => InboxRepositoryImpl(remoteDataSource: sl(), networkInfo: sl()),
+    () => InboxRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+      networkInfo: sl(),
+    ),
   );
 
   // Use Cases
@@ -127,7 +143,7 @@ Future<void> init() async {
   //! =========================
   //! Feature: Voice Email
   //! =========================
-  // Data sources
+  // Remote data source
   sl.registerLazySingleton<VoiceEmailRemoteDataSource>(
     () => VoiceEmailRemoteDataSourceImpl(
       dio: sl(),
