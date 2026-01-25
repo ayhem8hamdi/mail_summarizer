@@ -1,3 +1,4 @@
+// lib/features/inbox/presentation/views/widgets/inbox_view_body.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import 'package:inbox_iq/core/utils/constants.dart';
 import 'package:inbox_iq/features/inbox/domain/entities/email_entity.dart';
 import 'package:inbox_iq/features/inbox/presentation/manager/inbox_cubit/inbox_cubit.dart';
 import 'package:inbox_iq/features/inbox/presentation/manager/inbox_cubit/inbox_cubit_states.dart';
+import 'package:inbox_iq/features/inbox/presentation/views/shimmer_widgets/shimmer_loading_inbox_screen.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/email_card.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/filter_chip_item.dart';
 import 'package:inbox_iq/features/inbox/presentation/views/widgets/inbox_error_widget.dart';
@@ -17,6 +19,17 @@ class InboxViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<InboxCubit, InboxState>(
       builder: (context, state) {
+        // Show shimmer loading on initial load
+        if (state is InboxLoading) {
+          return const InboxShimmerLoading();
+        }
+
+        // Show error state
+        if (state is InboxError) {
+          return _buildErrorStateFullScreen(context, state);
+        }
+
+        // Show actual content with RefreshIndicator
         return RefreshIndicator(
           onRefresh: () async {
             await context.read<InboxCubit>().refreshEmails();
@@ -49,11 +62,7 @@ class InboxViewBody extends StatelessWidget {
                   child: SizedBox(height: AppConstants.spacing16),
                 ),
 
-                if (state is InboxLoading)
-                  _buildLoadingState()
-                else if (state is InboxError)
-                  _buildErrorState(context, state)
-                else if (state is InboxLoaded || state is InboxRefreshing)
+                if (state is InboxLoaded || state is InboxRefreshing)
                   _buildEmailList(context, state),
 
                 SliverToBoxAdapter(
@@ -163,11 +172,10 @@ class InboxViewBody extends StatelessWidget {
           return EmailCard(
             email: email,
             onTap: () {
-              // Pass the entire email object as JSON string
               context.pushNamed(
                 AppRouter.inboxDetailsScreen,
                 pathParameters: {'emailId': email.id},
-                extra: email, // Pass the email object directly
+                extra: email,
               );
             },
           );
@@ -176,19 +184,15 @@ class InboxViewBody extends StatelessWidget {
     );
   }
 
-  Widget _buildLoadingState() {
-    return const SliverFillRemaining(
-      child: Center(child: CircularProgressIndicator()),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context, InboxError state) {
-    return SliverFillRemaining(
-      child: InboxErrorWidget(
-        message: state.message,
-        onRetry: () {
-          context.read<InboxCubit>().fetchEmails();
-        },
+  Widget _buildErrorStateFullScreen(BuildContext context, InboxError state) {
+    return SafeArea(
+      child: Center(
+        child: InboxErrorWidget(
+          message: state.message,
+          onRetry: () {
+            context.read<InboxCubit>().fetchEmails();
+          },
+        ),
       ),
     );
   }
